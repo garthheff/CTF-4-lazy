@@ -75,4 +75,10 @@ main() {
   echo "  Press Alt+c to open the menu"
 }
 
+echo "Do you want me to reload your shell config now? (y/n)"
+read -r ans
+if [[ "$ans" =~ ^[Yy]$ ]]; then
+  [ -n "$ZSH_VERSION" ] && source ~/.zshrc || { [ -n "$BASH_VERSION" ] && source ~/.bashrc; }
+fi
+
 main "$@"
