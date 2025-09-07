@@ -66,19 +66,27 @@ main() {
   fi
 
   echo
-  echo "Done. Restart your shell or run:"
-  echo '[ -n "$ZSH_VERSION" ] && source ~/.zshrc || { [ -n "$BASH_VERSION" ] && source ~/.bashrc; }'
-  echo
   echo "Usage:"
   echo "  setip <ip>         # set target IP"
   echo "  setwordlist <file> # set wordlist path"
   echo "  Press Alt+c to open the menu"
-}
+  echo
 
-echo "Do you want me to reload your shell config now? (y/n)"
-read -r ans
-if [[ "$ans" =~ ^[Yy]$ ]]; then
-  [ -n "$ZSH_VERSION" ] && source ~/.zshrc || { [ -n "$BASH_VERSION" ] && source ~/.bashrc; }
-fi
+  # Prompt to reload (safe under set -u and uses detected shell)
+  echo "Do you want me to reload your shell config now? (y/n)"
+  read -r ans
+  if [[ "$ans" =~ ^[Yy]$ ]]; then
+    if [ "$SHELL_NAME" = "zsh" ]; then
+      # shellcheck disable=SC1090
+      source "$HOME/.zshrc"
+    else
+      # shellcheck disable=SC1090
+      source "$HOME/.bashrc"
+    fi
+  else
+    echo "You can reload later with:"
+    echo '[ -n "${ZSH_VERSION-}" ] && source ~/.zshrc || { [ -n "${BASH_VERSION-}" ] && source ~/.bashrc; }'
+  fi
+}
 
 main "$@"
