@@ -10,7 +10,7 @@ ctf4l — Bash/Zsh helper for CTFs &amp; sysadmins. Define full command template
 * sudo apt install -y fzf
 
 ## Install CTF-4-lazy
-* git clone https://github.com/garthheff/CTF-4-lazy/ctf4l.git
+* git clone https://github.com/garthheff/CTF-4-lazy.git
 * cd ctf4l
 * ./install.sh
 
