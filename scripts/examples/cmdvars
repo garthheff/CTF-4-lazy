@@ -1,0 +1,2 @@
+export IP=10.10.10.10
+export WORDLIST=/usr/share/wordlists/rockyou.txt
