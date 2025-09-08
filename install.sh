@@ -103,6 +103,13 @@ main() {
     echo "ctf4l already present in $RC_FILE"
   fi
 
+  # Backup rc file before modifying
+  if [[ -f "$RC_FILE" ]]; then
+    BACKUP_FILE="${RC_FILE}.ctf4l.bak.$(date +%Y%m%d%H%M%S)"
+    cp "$RC_FILE" "$BACKUP_FILE"
+    echo "Backed up $RC_FILE to $BACKUP_FILE"
+  fi
+
   echo
   echo "Usage:"
   echo "  setip <ip>         # set target IP"
