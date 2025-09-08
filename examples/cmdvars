@@ -1,2 +1,4 @@
 export IP=10.10.10.10
 export WORDLIST=/usr/share/wordlists/rockyou.txt
+export THREADS=64
+export AGENT="Mozilla/5.0"
