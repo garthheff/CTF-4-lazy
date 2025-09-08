@@ -25,14 +25,80 @@ ctf4l — Bash/Zsh helper for CTFs &amp; sysadmins. Define full command template
 [ -n "$ZSH_VERSION" ] && source ~/.zshrc || { [ -n "$BASH_VERSION" ] && source ~/.bashrc; }
 
 ## Usage
+Usage
 
 ### After installation, you get:
 
-* Alt+c → open fzf menu of commands (~/.cmdlist) expanded with your current $IP and $WORDLIST.
+* Alt+c → open the fzf menu of commands from ~/.cmdlist (expanded with variables from ~/.cmdvars / ~/.cmdvars.d).
 * setip <ip> → update the target IP in ~/.cmdvars.
 * setwordlist <path> → update the wordlist in ~/.cmdvars.
+* setvar NAME VALUE → set any custom variable (e.g., setvar THREADS 64, setvar AGENT "Mozilla/5.0").
+* unsetvar NAME → remove a variable.
+* listvars → list all currently defined variables.
+* savevars NAME / loadvars NAME → save and switch between variable profiles (~/.cmdvars.d/NAME.env).
+
+Variables can be used in your command list (~/.cmdlist) with $NAME or ${NAME} and are expanded with envsubst, so quotes and special characters are preserved.
 
 ### Examples:
-* setip 10.10.20.5
+#### set variables
+```
+setip 10.10.20.5
 * setwordlist /usr/share/wordlists/rockyou.txt
-* ctf4l (Alt+c → open fzf menu of commands)
+* setvar THREADS 64
+* setvar AGENT "Mozilla/5.0"
+```
+
+#### Open the menu and pick a command (Alt+c)
+
+__To list all commands__
+```
+ctf4l
+```
+__To list all commands that start with e.g gobuster__
+```
+ctf4l gobuster
+```
+
+#### Variable Expansion Rules (envsubst)
+
+The command list (~/.cmdlist) is expanded using envsubst
+
+#### This means:✅ Expanded:
+* $VAR
+* ${VAR}
+
+#### ❌ Not expanded (remain literal):
+* $1, $2 … (positional parameters)
+* ${VAR:-default} (default values)
+* $(command) (command substitution)
+* Backslashes, wildcards (*), pipes, etc.
+
+#### Escaping
+If you want to keep a literal $VAR in your command (no expansion), escape the $:
+```
+echo \$IP
+```
+
+#### After expansion:
+```
+echo $IP
+```
+
+#### Example
+```
+~/.cmdvars:
+export IP=10.10.20.5
+export AGENT="Mozilla/5.0"
+```
+
+#### ~/.cmdlist:
+```
+curl -H "User-Agent: $AGENT" http://$IP/
+echo \$IP   # literal string
+```
+
+#### Expands to:
+```
+curl -H "User-Agent: Mozilla/5.0" http://10.10.20.5/
+echo $IP
+```
