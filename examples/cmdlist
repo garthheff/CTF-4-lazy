@@ -1,5 +1,6 @@
+# one full command per line; any $VAR from ~/.cmdvars (and .d/*.env) will expand
 ping -c 4 $IP
 gobuster dir -u http://$IP/ -w $WORDLIST
 gobuster dir -u http://$IP/ -w $WORDLIST -x php,txt
 nmap -sV -p- $IP
-ffuf -u http://$IP/FUZZ -w $WORDLIST
+ffuf -u http://$IP/FUZZ -w $WORDLIST -t $THREADS -H "User-Agent: $AGENT"
