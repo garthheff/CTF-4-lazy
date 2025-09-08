@@ -1,13 +1,19 @@
 # CTF-4-lazy
 ctf4l — Bash/Zsh helper for CTFs &amp; sysadmins. Define full command templates with variables (e.g. $IP, $WORDLIST) and launch them via an fzf autocomplete menu. Live filter as you type, insert the expanded command into your prompt, and update variables anytime with setip / setwordlist.
 
-## Requirements
+## Requirements (Dependencies)
 - [`fzf`](https://github.com/junegunn/fzf)
+- [`envsubst`](https://www.gnu.org/software/gettext/manual/html_node/envsubst-Invocation.html) (part of **gettext**) – expands variables in your command templates while preserving quotes  
 
 ### Install fzf
 **Debian/Ubuntu/Kali**
 * sudo apt update
 * sudo apt install -y fzf
+
+### Install gettext-base
+**Debian/Ubuntu/Kali**
+* sudo apt update
+* sudo apt install -y fzf gettext-base
 
 ## Install CTF-4-lazy
 * git clone https://github.com/garthheff/CTF-4-lazy.git
