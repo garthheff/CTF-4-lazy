@@ -120,14 +120,11 @@ main() {
   echo
 
   # Offer to reload rc (temporarily relax -u to avoid 'unbound variable' in user rc)
-  echo "Do you want me to reload your shell config now? (y/n)"
+  echo "Do you want me to restart your shell now to load changes? (y/n)"
   read -r ans
   if [[ "$ans" =~ ^[Yy]$ ]]; then
-    set +u
-    # shellcheck disable=SC1090
-    . "$RC_FILE"
-    set -u
-    echo "Reloaded: $RC_FILE"
+    echo "Restarting $SHELL_NAME..."
+    exec "$LOGIN_SHELL" -l
   else
     echo "Reload later with:"
     echo '[ -n "${ZSH_VERSION-}" ] && source ~/.zshrc || { [ -n "${BASH_VERSION-}" ] && source ~/.bashrc; }'
