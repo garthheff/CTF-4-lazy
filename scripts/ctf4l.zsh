@@ -8,14 +8,22 @@ if [[ -d "$HOME/.cmdvars.d" ]]; then
   done
 fi
 
-# Expand lines from ~/.cmdlist using current env (IP, WORDLIST, and any others)
+# Expand lines from ~/.cmdlist using envsubst (preserves quotes)
 _ctf4l_expand_cmdlist() {
   [[ -f "$HOME/.cmdlist" ]] || return
-  local line
-  while IFS= read -r line; do
-    # Expand variables safely; keep original text form
-    eval "print -r -- \"$line\""
-  done < "$HOME/.cmdlist"
+  if command -v envsubst >/dev/null 2>&1; then
+    while IFS= read -r line; do
+      print -r -- "$line" | envsubst
+    done < "$HOME/.cmdlist"
+  else
+    # Fallback (warn + best-effort expansion)
+    print -r -- "(warning) envsubst not found; quotes may not be preserved"
+    local line
+    while IFS= read -r line; do
+      # Minimal fallback: expand vars with parameter expansion, keep quotes literal
+      eval "print -r -- \"${line//\\/\\\\}\""  # still not perfect for quotes
+    done < "$HOME/.cmdlist"
+  fi
 }
 
 # ZLE widget: prefilter by what's typed, open fzf, insert full command
