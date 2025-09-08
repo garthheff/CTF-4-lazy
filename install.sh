@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Resolve target user and home (safe even if someone runs via sudo)
+# Resolve target user and home (safe even if invoked with sudo)
 if [[ ${SUDO_USER-} && $EUID -eq 0 ]]; then
   TARGET_USER="$SUDO_USER"
   HOME_DIR="$(eval echo "~$TARGET_USER")"
@@ -47,18 +47,47 @@ ensure_fzf() {
   esac
 }
 
+ensure_envsubst() {
+  if command -v envsubst >/dev/null 2>&1; then return; fi
+  echo "envsubst not found (needed to expand \$VARS while preserving quotes)."
+  read -rp "Install envsubst now? [Y/n] " yn
+  yn="${yn:-Y}"
+  case "$yn" in
+    Y|y)
+      if [[ -f /etc/os-release ]]; then
+        . /etc/os-release
+        case "$ID" in
+          debian|ubuntu|kali) sudo apt update && sudo apt install -y gettext-base ;;  # provides envsubst
+          arch|manjaro) sudo pacman -S --needed gettext ;;
+          fedora|rhel|centos) sudo dnf install -y gettext || sudo yum install -y gettext ;;
+          *) echo "Unknown distro $ID. Please install 'gettext' manually." ; exit 1 ;;
+        esac
+      elif command -v brew >/dev/null 2>&1; then
+        brew install gettext
+        brew link --force gettext || true
+      else
+        echo "No supported package manager detected. Please install 'gettext' manually."
+        exit 1
+      fi
+      ;;
+    *) echo "Please install envsubst (gettext) and re-run install." ; exit 1 ;;
+  esac
+}
+
 main() {
   detect_shell
   echo "Detected shell: $SHELL_NAME (rc: $RC_FILE)"
+
   ensure_fzf
+  ensure_envsubst
 
   TARGET_DIR="$HOME_DIR/.ctf4l"
   mkdir -p "$TARGET_DIR"
   cp -f scripts/ctf4l.zsh "$TARGET_DIR"/
   cp -f scripts/ctf4l.bash "$TARGET_DIR"/
 
-  [[ -f "$HOME_DIR/.cmdvars" ]]  || cp -f examples/cmdvars "$HOME_DIR/.cmdvars"
-  [[ -f "$HOME_DIR/.cmdlist" ]]  || cp -f examples/cmdlist "$HOME_DIR/.cmdlist"
+  [[ -f "$HOME_DIR/.cmdvars" ]] || cp -f examples/cmdvars "$HOME_DIR/.cmdvars"
+  [[ -f "$HOME_DIR/.cmdlist" ]] || cp -f examples/cmdlist "$HOME_DIR/.cmdlist"
 
   if [[ "$SHELL_NAME" = "zsh" ]]; then
     SRC_LINE='source $HOME/.ctf4l/ctf4l.zsh'
@@ -78,6 +107,8 @@ main() {
   echo "Usage:"
   echo "  setip <ip>         # set target IP"
   echo "  setwordlist <file> # set wordlist path"
+  echo "  setvar NAME VALUE  # generic variable"
+  echo "  listvars           # show current variables"
   echo "  Press Alt+c to open the menu"
   echo
 
