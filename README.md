@@ -12,7 +12,7 @@ ctf4l — Bash/Zsh helper for CTFs &amp; sysadmins. Define full command template
 ## Install CTF-4-lazy
 * git clone https://github.com/garthheff/CTF-4-lazy.git
 * cd CTF-4-lazy
-* chmod -x install.sh
+* chmod +x install.sh
 * ./install.sh
 
 ## restart your shell or: source ~/.zshrc  or ~/.bashrc
